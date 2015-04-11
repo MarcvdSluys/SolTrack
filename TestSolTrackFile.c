@@ -2,9 +2,9 @@
   SolTrack: a simple, free, fast and accurate C routine to compute the position of the Sun
   
   Test program for SolTrack:
-  1) rename random_dates_100.dat to random_dates.dat
+  1) compile the code, e.g.:  gcc -O2 -lm -o TestSolTrack TestSolTrackFile.c SolTrack.c
   2) run TestSolTrack on the 100 random dates between 2014 and 2113 in random_dates.dat (in UT!)
-  3) the output in SolTrack_positions.dat should be identical to SolTrack_positions_100.dat, barring round-off errors
+  3) the output in SolTrack_positions.dat should be identical to SolTrack_positions_compare.dat, barring round-off errors
   
   
   Copyright (c) 2014-2015  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
@@ -32,16 +32,6 @@ int main() {
   
   
   struct Time time;
-  
-  // Set date and time manually (not used when reading from random_dates.dat)
-  time.year = 2014;
-  time.month = 6;
-  time.day = 21;
-  time.hour = 13 - 2;
-  time.minute = 41;
-  time.second = 46;
-  
-  
   struct Location loc;
   loc.longitude =  5.950270/R2D;  // HAN University of applied sciences, Arnhem, The Netherlands
   loc.latitude  = 51.987380/R2D;
