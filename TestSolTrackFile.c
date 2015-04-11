@@ -7,7 +7,7 @@
   3) the output in SolTrack_positions.dat should be identical to SolTrack_positions_100.dat, barring round-off errors
   
   
-  Copyright (c) 2014  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
+  Copyright (c) 2014-2015  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
   Lectorate of Sustainable Energy, HAN University of applied sciences, Arnhem, The Netherlands
    
   This file is part of the SolTrack package, see: http://soltrack.sourceforge.net

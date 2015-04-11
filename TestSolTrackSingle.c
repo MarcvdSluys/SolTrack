@@ -4,7 +4,7 @@
   Test program for SolTrack, using a hard-coded date, time and location.  Output to screen.
   
   
-  Copyright (c) 2014  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
+  Copyright (c) 2014-2015  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
   Lectorate of Sustainable Energy, HAN University of applied sciences, Arnhem, The Netherlands
    
   This file is part of the SolTrack package, see: http://soltrack.sourceforge.net

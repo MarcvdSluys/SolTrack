@@ -2,7 +2,7 @@
   SolTrack: a simple, free, fast and accurate C routine to compute the position of the Sun
   
   
-  Copyright (c) 2014  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
+  Copyright (c) 2014-2015  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
   Lectorate of Sustainable Energy, HAN University of applied sciences, Arnhem, The Netherlands
   
    
