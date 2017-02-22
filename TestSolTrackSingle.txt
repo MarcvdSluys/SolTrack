@@ -1,0 +1,13 @@
+Example output for TestSolTrackSingle.c:
+
+Date:   2045  7 16
+Time:    6  2 49.217348
+JD:      2468177.75195853412
+
+Ecliptic longitude, latitude:        114.141601°   0.000000°
+Right ascension, declination:          7.735668°  21.280268°
+Uncorrected altitude:                             19.696317°
+
+Corrected azimuth, altitude:          80.333093°  19.742741°
+Corected hour angle, declination:     95.142605°  21.313740°
+
