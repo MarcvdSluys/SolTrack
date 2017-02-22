@@ -2,19 +2,19 @@
   SolTrack: a simple, free, fast and accurate C routine to compute the position of the Sun
   
   
-  Copyright (c) 2014-2015  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
+  Copyright (c) 2014-2017  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
   Lectorate of Sustainable Energy, HAN University of applied sciences, Arnhem, The Netherlands
    
   This file is part of the SolTrack package, see: http://soltrack.sourceforge.net
   SolTrack is derived from libTheSky (http://libthesky.sourceforge.net) under the terms of the GPL v.3
   
-  This is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published
+  This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published
   by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
   
   This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
   
-  You should have received a copy of the GNU General Public License along with this code.  If not, see 
+  You should have received a copy of the GNU Lesser General Public License along with this code.  If not, see 
   <http://www.gnu.org/licenses/>.
 */
 
@@ -25,45 +25,62 @@
 /**
  * @brief   Main function to compute the position of the Sun
  *
- * @param [in] time                Struct containing date and time to compute the position for, in UT
- * @param [in] location            Struct containing the geographic location to compute the position for
- * @param [out] position           Struct containing the position of the Sun in horizontal (and equatorial if desired) coordinates
- * @param [in]  computeEquatorial  Compute equatorial coordinates yes (1) or no (0)
+ * @param [in]    time                   Struct containing date and time to compute the position for, in UT
+ * @param [inout] location               Struct containing the geographic location to compute the position for
+ * @param [out]   position               Struct containing the position of the Sun in horizontal (and equatorial if desired) coordinates
+ * 
+ * @param [in]    useDegrees             Use degrees for input and output angular variables, rather than radians
+ * @param [in]    useNorthEqualsZero     Use the definition where azimuth=0 denotes north, rather than south
+ * @param [in]    computeRefrEquatorial  Compute refraction correction for equatorial coordinates: 0-no, 1-yes
+ * @param [in]    computeDistance        Compute distance to the Sun (in AU): 0-no, 1-yes
  *
  * Example Usage:
  * @code SolTrack(time, location, &position, 1); @endcode
  */
 
-void SolTrack(struct Time time, struct Location location, struct Position *position, int computeEquatorial) {
+void SolTrack(struct Time time, struct Location *location, struct Position *position,  int useDegrees, int useNorthEqualsZero, int computeRefrEquatorial, int computeDistance) {
+  
+  // If the used uses degrees, convert the geographic location to radians:
+  if(useDegrees) {
+    location->longitude /= R2D;
+    location->latitude  /= R2D;
+  }
+  
+  
+  // Compute these once and reuse:
+  location->sinLat = sin(location->latitude);
+  location->cosLat = sqrt(1.0 - location->sinLat * location->sinLat);  // Cosine of a latitude is always positive or zero
+  
+  
   
   // Compute the Julian Day from the date and time:
   position->julianDay = computeJulianDay(time.year, time.month, time.day,  time.hour, time.minute, time.second);
   
   
   // Derived expressions of time:
-  position->dJD  = position->julianDay - 2451545.0;                 // Time in days since 2000.0
-  position->tJC  = position->dJD/36525.0;                           // Time in Julian centuries since 2000.0
-  position->tJC2 = position->tJC*position->tJC;                     // T^2
-  position->tJC3 = position->tJC2*position->tJC;                    // T^3
+  position->tJD  = position->julianDay - 2451545.0;                    // Time in Julian days since 2000.0
+  position->tJC  = position->tJD/36525.0;                              // Time in Julian centuries since 2000.0
+  position->tJC2 = position->tJC*position->tJC;                        // T^2
   
   
   // Compute the ecliptic longitude of the Sun and the obliquity of the ecliptic:
-  computeLongitude(position);
+  computeLongitude(computeDistance, position);
   
   // Convert ecliptic coordinates to geocentric equatorial coordinates:
-  convertEclipticToEquatorial(position->longitude, position->obliquity,  &position->rightAscension, &position->declination);
+  convertEclipticToEquatorial(position->longitude, position->cosObliquity,  &position->rightAscension, &position->declination);
   
   // Convert equatorial coordinates to horizontal coordinates, correcting for parallax and refraction:
-  convertEquatorialToHorizontal(location, position);
+  convertEquatorialToHorizontal(*location, position);
+  
   
   // Convert the corrected horizontal coordinates back to equatorial coordinates:
-  if(computeEquatorial) convertHorizontalToEquatorial(location.latitude, position->azimuthRefract, position->altitudeRefract,  &position->hourAngleRefract, &position->declinationRefract);
+  if(computeRefrEquatorial) convertHorizontalToEquatorial(location->sinLat, location->cosLat, position->azimuthRefract, position->altitudeRefract, &position->hourAngleRefract, &position->declinationRefract);
   
-  // Use the North=0 convention for azimuth and hour angle (default: South = 0):
-  useNorthEqualsZero(&position->azimuthRefract, &position->hourAngleRefract, computeEquatorial);
+  // Use the North=0 convention for azimuth and hour angle (default: South = 0) if desired:
+  if(useNorthEqualsZero) setNorthToZero(&position->azimuthRefract, &position->hourAngleRefract, computeRefrEquatorial);
   
-  // Convert final results from radians to degrees:
-  convertRadiansToDegrees(&position->azimuthRefract, &position->altitudeRefract,  &position->hourAngleRefract, &position->declinationRefract, computeEquatorial);
+  // If the user wants degrees, convert final results from radians to degrees:
+  if(useDegrees) convertRadiansToDegrees(&position->azimuthRefract, &position->altitudeRefract,  &position->hourAngleRefract, &position->declinationRefract, computeRefrEquatorial);
 }
 
 
@@ -103,40 +120,48 @@ double computeJulianDay(int year, int month, int day,  int hour, int minute, dou
 
 
 /**
- * @brief  Compute the ecliptic longitude and distance of the Sun for a given Julian Day
+ * @brief  Compute the ecliptic longitude of the Sun for a given Julian Day
  * 
  * Also computes the obliquity of the ecliptic and nutation.
  *
+ * @param [in]     computeDistance  Compute distance to the Sun (in AU): 0-no, 1-yes
  * @param [inout]  position  Position of the Sun
  */
 
-void computeLongitude(struct Position *position) {
+void computeLongitude(int computeDistance, struct Position *position) {
   
   double l0 = 4.895063168 + 628.331966786 * position->tJC  +  5.291838e-6  * position->tJC2;  // Mean longitude
   double m  = 6.240060141 + 628.301955152 * position->tJC  -  2.682571e-6  * position->tJC2;  // Mean anomaly
-  double e  = 0.016708634 - 0.000042037   * position->tJC  -  0.0000001267 * position->tJC2;  // Eccentricity of the Earth's orbit
-    
   
-  double c = (3.34161088e-2 - 8.40725e-5* position->tJC - 2.443e-7*position->tJC2)*sin(m)  +  (3.489437e-4 - 1.76278e-6*position->tJC)*sin(2*m) + 5.044e-6*sin(3*m);  // Sun's equation of the centre
-  double odot = l0 + c;                                   // True longitude - rev
-  double nu = m + c;                                      // True anomaly - rev
-  double dist = 1.000001018*(1.0-e*e)/(1.0 + e*cos(nu));  // Geocentric distance of the Sun in AU
+  
+  double c = (3.34161088e-2 - 8.40725e-5* position->tJC - 2.443e-7*position->tJC2)*sin(m) + (3.489437e-4 - 1.76278e-6*position->tJC)*sin(2*m);   // Sun's equation of the centre
+  double odot = l0 + c;                                                                       // True longitude
   
   
   // Nutation, aberration:
-  double omg  = 2.1824390725 - 33.7570464271 * position->tJC  + 3.622256e-5 * position->tJC2 + 3.7337958e-8 * position->tJC3 - 2.879321e-10 * position->tJC2*position->tJC2;  // Lon. of Moon's mean ascending node
-  double lm   = 3.8103417 + 8399.709113*position->tJC;                                                                                // Mean longitude of the Moon
-  double dpsi = -8.338795e-5*sin(omg) - 6.39954e-6*sin(2*l0) - 1.115e-6*sin(2*lm) + 1.018e-6*sin(2*omg);                    // Nutation in longitude
+  double omg  = 2.1824390725 - 33.7570464271 * position->tJC  + 3.622256e-5 * position->tJC2;                               // Lon. of Moon's mean ascending node
+  double dpsi = -8.338601e-5*sin(omg);                                                                                      // Nutation in longitude
+  double dist = 1.0000010178;                                                                                               // Mean distance to the Sun in AU
+  if(computeDistance) {
+    double ecc = 0.016708634 - 0.000042037   * position->tJC  -  0.0000001267 * position->tJC2;                             // Eccentricity of the Earth's orbit
+    double nu = m + c;                                                                                                      // True anomaly
+    dist = dist*(1.0 - ecc*ecc)/(1.0 + ecc*cos(nu));                                                                        // Geocentric distance of the Sun in AU
+  }
   double aber = -9.93087e-5/dist;                                                                                           // Aberration
-  position->longitude  = fmod(odot + aber + dpsi + MPI, TWO_PI);                                                            // Apparent geocentric longitude, referred to the true equinox of date
-  position->distance   = dist;                                                                                              // Geocentric distance to the Sun, in AU
-  
   
   // Obliquity of the ecliptic and nutation - do this here, since we've already computed many of the ingredients:
-  double eps0 = 0.409092804222 - 2.26965525e-4*position->tJC - 2.86e-9*position->tJC2 + 8.78967e-9*position->tJC3;                      // Mean obliquity of the ecliptic
-  double deps = 4.46e-5*cos(omg) + 2.76e-6*cos(2*l0) + 4.848e-7*cos(2*lm) - 4.36e-7*cos(2*omg);           // Nutation in obliquity
-  position->obliquity   = eps0 + deps;                                                                    // True obliquity of the ecliptic
-  position->nutationLon = dpsi;                                                                           // Nutation in longitude
+  double eps0 = 0.409092804222 - 2.26965525e-4*position->tJC - 2.86e-9*position->tJC2;                                      // Mean obliquity of the ecliptic
+  double deps = 4.4615e-5*cos(omg);                                                                                         // Nutation in obliquity
+  
+  // Save position parameters:
+  position->longitude = odot + aber + dpsi;                                                                                 // Apparent geocentric longitude, referred to the true equinox of date
+  while(position->longitude > TWO_PI) position->longitude -= TWO_PI;
+  
+  position->distance = dist;                                                                                                // Distance (AU)
+  
+  position->obliquity   = eps0 + deps;                                                                                      // True obliquity of the ecliptic
+  position->cosObliquity = cos(position->obliquity);                                                                        // Need the cosine later on
+  position->nutationLon = dpsi;                                                                                             // Nutation in longitude
 }
 
 
@@ -146,15 +171,18 @@ void computeLongitude(struct Position *position) {
  * This function assumes that the ecliptic latitude = 0.
  *
  * @param [in] longitude  Ecliptic longitude of the Sun (rad)
- * @param [in] obliquity  Obliquity of the ecliptic (rad)
+ * @param [in] cosObliquity  Cosine of the obliquity of the ecliptic
  * 
  * @param [out] rightAscension  Right ascension of the Sun (rad)
  * @param [out] declination     Declination of the Sun (rad)
  */
 
-void convertEclipticToEquatorial(double longitude, double obliquity,  double *rightAscension, double *declination) {
-  *rightAscension   = atan2(cos(obliquity)*sin(longitude),cos(longitude));
-  *declination      = asin(sin(obliquity)*sin(longitude));
+void convertEclipticToEquatorial(double longitude, double cosObliquity,  double *rightAscension, double *declination) {
+  double sinLon = sin(longitude);
+  double sinObl = sqrt(1.0-cosObliquity*cosObliquity);               // Sine of the obliquity of the ecliptic will be positive in the forseeable future
+
+  *rightAscension   = STatan2(cosObliquity*sinLon, cos(longitude));  // 0 <= azimuth < 2pi
+  *declination      = asin(sinObl*sinLon);
 }
 
 
@@ -169,20 +197,26 @@ void convertEclipticToEquatorial(double longitude, double obliquity,  double *ri
  */
 
 void convertEquatorialToHorizontal(struct Location location, struct Position *position) {
-  double gmst   = 4.89496121273579229 + 6.3003880989849575*position->dJD + 6.77070812713916e-6*position->tJC2 - 4.5087296615715e-10*position->tJC2*position->tJC;  // Greenwich mean siderial time
-  double agst   = gmst + position->nutationLon * cos(position->obliquity);                                         // Correction for equation of the equinoxes -> apparent Greenwich siderial time
+  double gmst    = 4.89496121 + 6.300388098985*position->tJD + 6.77e-6*position->tJC2;  // Greenwich mean sidereal time
+  position->agst = gmst + position->nutationLon * position->cosObliquity;               // Correction for equation of the equinoxes -> apparent Greenwich sidereal time
   
-  double alt = 0.0;
+  
+  double sinAlt=0.0;
   // Azimuth does not need to be corrected for parallax or refraction, hence store the result in the 'azimuthRefract' variable directly:
-  eq2horiz(location.latitude, location.longitude,  position->rightAscension, position->declination, agst,  &position->azimuthRefract, &alt);
+  eq2horiz(location.sinLat,location.cosLat, location.longitude,  position->rightAscension, position->declination, position->agst,  &position->azimuthRefract, &sinAlt);
+  
+  double alt = asin( sinAlt );                                     // Altitude of the Sun above the horizon (rad)
+  double cosAlt = sqrt(1.0 - sinAlt * sinAlt);                     // Cosine of the altitude is always positive or zero
   
   // Correct for parallax:
-  alt -= asin(EARTH_RADIUS/(position->distance*AU)) * cos(alt);  // Subtract the parallax from the altitude
+  alt -= 4.2635e-5 * cosAlt;                                       // Horizontal parallax = 8.794" = 4.2635e-5 rad
   position->altitude = alt;
   
   // Correct for atmospheric refraction:
-  alt += 2.9670597e-4/tan(alt + 3.137559e-3/(alt + 8.91863e-2));  // Add the refraction correction to the altitude
-  
+  double dalt = 2.967e-4 / tan(alt + 3.1376e-3/(alt + 8.92e-2));   // Refraction correction in altitude
+  dalt *= location.pressure/101.0 * 283.0/location.temperature;
+  alt += dalt;
+  // to do: add pressure/temperature dependence
   position->altitudeRefract = alt;
 }
 
@@ -191,62 +225,58 @@ void convertEquatorialToHorizontal(struct Location location, struct Position *po
 /**
  * @brief  Convert equatorial coordinates to horizontal coordinates
  * 
- * @param [in]  latitude        Geographic latitude of the observer (rad)
+ * @param [in]  sinLat          Sine of the geographic latitude of the observer
+ * @param [in]  cosLat          Cosine of the geographic latitude of the observer
  * @param [in]  longitude       Geographic longitude of the observer (rad)
  * @param [in]  rightAscension  Right ascension of the Sun (rad)
  * @param [in]  declination     Declination of the Sun (rad)
- * @param [in]  agst            Apparent Greenwich siderial time (Greenwich mean siderial time, corrected for the equation of the equinoxes)
+ * @param [in]  agst            Apparent Greenwich sidereal time (Greenwich mean sidereal time, corrected for the equation of the equinoxes)
+ * 
  * @param [out] azimuth         Azimuth ("wind direction") of the Sun (rad; 0=South)
- * @param [out] altitude        Altitude of the Sun above the horizon (rad)
+ * @param [out] sinAlt          Sine of the altitude of the Sun above the horizon
  */
 
-void eq2horiz(double latitude, double longitude,  double rightAscension, double declination, double agst, double *azimuth, double *altitude) {
+void eq2horiz(double sinLat, double cosLat, double longitude,  double rightAscension, double declination, double agst,   double *azimuth, double *sinAlt) {
   
-  double hh  = agst + longitude - rightAscension;   // Local Hour Angle
+  double ha  = agst + longitude - rightAscension;                      // Local Hour Angle
   
   // Some preparation, saves ~29%:
-  double sinhh  = sin(hh);
-  double coshh  = cos(hh);
+  double sinHa  = sin(ha);
+  double cosHa  = cos(ha);
   
-  double sindec = sin(declination);
-  double cosdec = sqrt(1.0-sindec*sindec);    // Cosine of a declination is always positive
-  double tandec = sindec/cosdec;
+  double sinDec = sin(declination);
+  double cosDec = sqrt(1.0 - sinDec * sinDec);                         // Cosine of a declination is always positive or zero
+  double tanDec = sinDec/cosDec;
   
-  double sinlat = sin(latitude);
-  double coslat = sqrt(1.0-sinlat*sinlat);    // Cosine of a latitude is always positive
-  
-  *azimuth  = fmod( atan2( sinhh,    coshh  * sinlat - tandec * coslat ) + MPI, TWO_PI);  // 0 < azimuth < 2pi
-  *altitude = asin( sinlat * sindec + coslat * cosdec * coshh );
+  *azimuth = STatan2( sinHa,  cosHa  * sinLat - tanDec * cosLat );     // 0 <= azimuth < 2pi
+  *sinAlt = sinLat * sinDec + cosLat * cosDec * cosHa;                 // Sine of the altitude above the horizon
 }
 
 
 
 /**
- * @brief  Convert horizontal coordinates to equatorial coordinates
+ * @brief  Convert (refraction-corrected) horizontal coordinates to equatorial coordinates
  * 
- * @param [in]  latitude     Geographic latitude of the observer (rad)
+ * @param [in]  sinLat       Sine of the geographic latitude of the observer
+ * @param [in]  cosLat       Cosine of the geographic latitude of the observer
  * @param [in]  azimuth      Azimuth ("wind direction") of the Sun (rad; 0=South)
  * @param [in]  altitude     Altitude of the Sun above the horizon (rad)
  * @param [out] hourAngle    Hour angle of the Sun (rad; 0=South)
  * @param [out] declination  Declination of the Sun (rad)
  */
 
-void convertHorizontalToEquatorial(double latitude, double azimuth, double altitude,  double *hourAngle, double *declination) {
+void convertHorizontalToEquatorial(double sinLat, double cosLat, double azimuth, double altitude, double *hourAngle, double *declination) {
   
   // Multiply used variables:
-  double cosaz  = cos(azimuth);  // Add pi to set South = 0;
-  double sinaz  = sin(azimuth);  // Add pi to set South = 0;
+  double cosAz  = cos(azimuth);
+  double sinAz  = sin(azimuth);                                            // For symmetry
   
-  double sinalt = sin(altitude);
-  double cosalt = sqrt(1.0-sinalt*sinalt);    // Cosine of an altitude is always positive
-  double tanalt = sinalt/cosalt;
+  double sinAlt = sin(altitude);
+  double cosAlt = sqrt(1.0 - sinAlt * sinAlt);                             // Cosine of an altitude is always positive or zero
+  double tanAlt = sinAlt/cosAlt;
   
-  double sinlat = sin(latitude);
-  double coslat = sqrt(1.0-sinlat*sinlat);    // Cosine of a latitude is always positive
-  
-  *hourAngle   = atan2( sinaz ,  cosaz  * sinlat + tanalt * coslat );      // Local Hour Angle
-  *hourAngle   = fmod(*hourAngle + MPI, TWO_PI);                           // 0 < Hour Angle < 2-pi
-  *declination = asin(  sinlat * sinalt  -  coslat * cosalt * cosaz  );    // Declination
+  *hourAngle   = STatan2( sinAz ,  cosAz  * sinLat + tanAlt * cosLat );    // Local Hour Angle:  0 <= hourAngle < 2pi
+  *declination = asin(  sinLat * sinAlt  -  cosLat * cosAlt * cosAz  );    // Declination
 }
 
 
@@ -256,14 +286,19 @@ void convertHorizontalToEquatorial(double latitude, double azimuth, double altit
  * 
  * South=0 is the default in celestial astronomy.  This makes the angles compatible with the compass/wind directions.
  * 
- * @param [inout] azimuth            Azimuth ("wind direction") of the Sun (rad)
- * @param [inout] hourAngle          Hour angle of the Sun (rad)
- * @param [in]    computeEquatorial  Compute equatorial coordinates
+ * @param [inout] azimuth                Azimuth ("wind direction") of the Sun (rad)
+ * @param [inout] hourAngle              Hour angle of the Sun (rad)
+ * @param [in]    computeRefrEquatorial  Compute refraction correction for equatorial coordinates
  */
 
-void useNorthEqualsZero(double *azimuth, double *hourAngle, int computeEquatorial) {
-  *azimuth   = fmod(*azimuth   + PI  + MPI, TWO_PI);                        // Add PI to set North=0 and ensure 0 < azimuth < 2pi
-  if(computeEquatorial) *hourAngle = fmod(*hourAngle + PI  + MPI, TWO_PI);  // Add PI to set North=0 and ensure 0 < hour angle < 2pi
+void setNorthToZero(double *azimuth, double *hourAngle, int computeRefrEquatorial) {
+  *azimuth = *azimuth + PI;                            // Add PI to set North=0
+  if(*azimuth > TWO_PI) *azimuth -= TWO_PI;            // Ensure 0 <= azimuth < 2pi
+
+  if(computeRefrEquatorial) {
+    *hourAngle = *hourAngle + PI;                      // Add PI to set North=0
+    if(*hourAngle > TWO_PI) *hourAngle -= TWO_PI;      // Ensure 0 <= hour angle < 2pi
+  }
 }
 
 
@@ -273,20 +308,62 @@ void useNorthEqualsZero(double *azimuth, double *hourAngle, int computeEquatoria
  * 
  * Not touching intermediate results.
  * 
- * @param [inout] azimuth            Azimuth ("wind direction") of the Sun (rad->deg)
- * @param [inout] altitude           Altitude of the Sun above the horizon (rad->deg)
- * @param [inout] hourAngle          Hour angle of the Sun (rad->deg)
- * @param [inout] declination        Declination of the Sun (rad->deg)
- * @param [in]    computeEquatorial  Compute equatorial coordinates
+ * @param [inout] azimuth                Azimuth ("wind direction") of the Sun (rad->deg)
+ * @param [inout] altitude               Altitude of the Sun above the horizon (rad->deg)
+ * @param [inout] hourAngle              Hour angle of the Sun (rad->deg)
+ * @param [inout] declination            Declination of the Sun (rad->deg)
+ * @param [in]    computeRefrEquatorial  Compute refraction correction for equatorial coordinates
  */
 
-void convertRadiansToDegrees(double *azimuth, double *altitude,  double *hourAngle, double *declination, int computeEquatorial) {
+void convertRadiansToDegrees(double *azimuth, double *altitude,  double *hourAngle, double *declination, int computeRefrEquatorial) {
   *azimuth *= R2D;
   *altitude *= R2D;
-  if(computeEquatorial) {
+  if(computeRefrEquatorial) {
     *hourAngle *= R2D;
     *declination *= R2D;
   }
+}
+
+
+
+/**
+ * @brief  My version of the atan2() function - ~39% faster than built-in (in terms of number of instructions)
+ * 
+ * @param [in] y   Numerator of the fraction to compute the arctangent for
+ * @param [in] x   Denominator of the fraction to compute the arctangent for
+ * 
+ * 
+ * atan2(y,x) = atan(y/x), where the result will be put in the correct quadrant
+ * 
+ * @see  https://en.wikipedia.org/wiki/Atan2#Definition_and_computation
+ */
+
+double STatan2(double y, double x) {
+  
+  if(x > 0.0) {
+    
+    return atan(y/x);
+    
+  } else if(x < 0.0) {
+    
+    if(y >= 0.0) {
+      return atan(y/x) + PI;
+    } else {  // y < 0
+      return atan(y/x) - PI;
+    }
+    
+  } else {  // x == 0
+    
+    if(y > 0.0) {
+      return PI/2.0;
+    } else if(y < 0.0) {
+      return -PI/2.0;
+    } else {  // y == 0
+      return 0.0;
+    }
+    
+  }
+  
 }
 
 
