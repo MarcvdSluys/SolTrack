@@ -73,7 +73,7 @@ int main() {
 		&time.hour, &time.minute, &time.second, &jd) != EOF) {
     
     // Compute positions:
-    SolTrack(time, &loc, &pos,  useDegrees, useNorthEqualsZero, computeRefrEquatorial, computeDistance);
+    SolTrack(time, loc, &pos,  useDegrees, useNorthEqualsZero, computeRefrEquatorial, computeDistance);
     
     // Write the positions to file:
     fprintf(outFile, "%4d %2d %2d   %2d %2d %9.6lf  %20.11lf   %10.6lf %10.6lf   %10.6lf %10.6lf   %10.6lf %10.6lf %10.6lf   %10.6lf %10.6lf\n", 

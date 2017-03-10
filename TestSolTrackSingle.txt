@@ -4,6 +4,10 @@ Date:   2045  7 16
 Time:    6  2 49.217348
 JD:      2468177.75195853412
 
+Rise time:          3.59899,    azimuth:    -127.47747
+Transit time:      11.70656,    altitude:     59.25347
+Set time:          19.80098,    azimuth:     127.26114
+
 Ecliptic longitude, latitude:        114.141601°   0.000000°
 Right ascension, declination:          7.735668°  21.280268°
 Uncorrected altitude:                             19.696317°

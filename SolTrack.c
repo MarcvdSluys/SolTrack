@@ -38,18 +38,19 @@
  * @code SolTrack(time, location, &position, 1); @endcode
  */
 
-void SolTrack(struct Time time, struct Location *location, struct Position *position,  int useDegrees, int useNorthEqualsZero, int computeRefrEquatorial, int computeDistance) {
+void SolTrack(struct Time time, struct Location location, struct Position *position,  int useDegrees, int useNorthEqualsZero, int computeRefrEquatorial, int computeDistance) {
   
   // If the used uses degrees, convert the geographic location to radians:
+  struct Location llocation = location;  // Create local variable
   if(useDegrees) {
-    location->longitude /= R2D;
-    location->latitude  /= R2D;
+    llocation.longitude /= R2D;
+    llocation.latitude  /= R2D;
   }
   
   
   // Compute these once and reuse:
-  location->sinLat = sin(location->latitude);
-  location->cosLat = sqrt(1.0 - location->sinLat * location->sinLat);  // Cosine of a latitude is always positive or zero
+  llocation.sinLat = sin(llocation.latitude);
+  llocation.cosLat = sqrt(1.0 - llocation.sinLat * llocation.sinLat);  // Cosine of a latitude is always positive or zero
   
   
   
@@ -70,11 +71,11 @@ void SolTrack(struct Time time, struct Location *location, struct Position *posi
   convertEclipticToEquatorial(position->longitude, position->cosObliquity,  &position->rightAscension, &position->declination);
   
   // Convert equatorial coordinates to horizontal coordinates, correcting for parallax and refraction:
-  convertEquatorialToHorizontal(*location, position);
+  convertEquatorialToHorizontal(llocation, position);
   
   
   // Convert the corrected horizontal coordinates back to equatorial coordinates:
-  if(computeRefrEquatorial) convertHorizontalToEquatorial(location->sinLat, location->cosLat, position->azimuthRefract, position->altitudeRefract, &position->hourAngleRefract, &position->declinationRefract);
+  if(computeRefrEquatorial) convertHorizontalToEquatorial(llocation.sinLat, llocation.cosLat, position->azimuthRefract, position->altitudeRefract, &position->hourAngleRefract, &position->declinationRefract);
   
   // Use the North=0 convention for azimuth and hour angle (default: South = 0) if desired:
   if(useNorthEqualsZero) setNorthToZero(&position->azimuthRefract, &position->hourAngleRefract, computeRefrEquatorial);

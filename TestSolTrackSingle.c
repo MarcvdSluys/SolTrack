@@ -49,14 +49,23 @@ int main() {
   loc.temperature = 283.0;  // Atmospheric temperature in K
   
   
-  // Compute positions:
+  // Compute rise and set times:
   struct Position pos;
-  SolTrack(time, &loc, &pos, useDegrees, useNorthEqualsZero, computeRefrEquatorial, computeDistance);
+  struct RiseSet riseSet;
+  SolTrack_RiseSet(time, loc, &pos, &riseSet, 0.0, useDegrees, useNorthEqualsZero);
+  
+  
+  // Compute positions:
+  SolTrack(time, loc, &pos, useDegrees, useNorthEqualsZero, computeRefrEquatorial, computeDistance);
   
   // Write data to screen:
   printf("Date:   %4d %2d %2d\n", time.year, time.month, time.day);
   printf("Time:   %2d %2d %9.6lf\n", (int)time.hour, (int)time.minute, time.second);
   printf("JD:     %20.11lf\n\n", pos.julianDay);
+  
+  printf("Rise time:      %11.5lf,    azimuth:   %11.5lf\n", riseSet.riseTime, riseSet.riseAzimuth*R2D);
+  printf("Transit time:   %11.5lf,    altitude:  %11.5lf\n", riseSet.transitTime, riseSet.transitAltitude*R2D);
+  printf("Set time:       %11.5lf,    azimuth:   %11.5lf\n\n", riseSet.setTime, riseSet.setAzimuth*R2D);
   
   printf("Ecliptic longitude, latitude:        %10.6lf° %10.6lf°\n", pos.longitude*R2D, 0.0);
   printf("Right ascension, declination:        %10.6lf° %10.6lf°\n", fmod(pos.rightAscension + MPI, TWO_PI)*R2D/15.0, pos.declination*R2D);
