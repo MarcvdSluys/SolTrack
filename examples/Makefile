@@ -36,4 +36,5 @@ clean:
 
 cleanall: clean
 	rm -f TestSolTrackFile TestSolTrackSingle
+	rm -rf obj/
 
