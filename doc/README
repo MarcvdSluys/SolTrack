@@ -1,0 +1,40 @@
+
+Package:      SolTrack
+Description:  A simple, free, fast and accurate C/C++ routine to compute 
+	      the position of the Sun
+Homepage:     http://soltrack.sourceforge.net
+Copyright:    (c) 2014-2017  Marc van der Sluys, Paul van Kan and Jurgen Reintjes, 
+	      HAN university of applied sciences, Arnhem, the Netherlands
+
+
+SolTrack is a simple, free, fast and accurate C routine to compute the position 
+of the Sun. In addition, SolTrack computes rise and set times and azimuths, and 
+transit times and altitudes. The code can be used to track the Sun on low-spec 
+machine, such as a microcontroller or PLC, and can be used for e.g. (highly) 
+concentrated (photovoltaic) solar power. 
+SolTrack has been developed by Marc van der Sluys, Paul van Kan and Jurgen 
+Reintjes, of the Lectorate of Sustainable Energy at the HAN University of applied 
+sciences in Arnhem, the Netherlands. The code is derived from the astronomical 
+Fortran library libTheSky and is available under the terms of the GNU LGPL v.3.
+
+
+
+LICENCE:
+
+Copyright (c) 2014-2017  Marc van der Sluys, Paul van Kan and Jurgen Reintjes, 
+HAN university of applied sciences, Arnhem, the Netherlands
+ 
+This file is part of the SolTrack package.
+ 
+This is free software: you can redistribute it and/or modify it under the terms of 
+the GNU Lesser General Public License as published by the Free Software Foundation, 
+either version 3 of the License, or (at your option) any later version.
+
+This software is distributed in the hope that it will be useful, but WITHOUT ANY 
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along 
+with this code (LICENCE).  If not, see <http://www.gnu.org/licenses/>.
+
+

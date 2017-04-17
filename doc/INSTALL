@@ -1,0 +1,97 @@
+
+SolTrack INSTALL
+soltrack.sf.net
+
+
+
+DEPENDENCIES:
+
+SolTrack is written in plain C, hence you will need a C compiler.  Gcc is a 
+free, open-source C/C++ compiler included in many GNU/Linux 
+distributions and available from https://gcc.gnu.org/.  
+
+The default installer uses CMake to configure and compile the code.  CMake is also 
+open-source software, also included in most GNU/Linux distributions, and can be 
+downloaded from http://www.cmake.org/.  Alternatively, you can create your own 
+Makefile or compile and link the code manually.
+
+
+
+UNPACKING:
+
+After downloading from soltrack.sf.net, you can unpack the tarball and cd into its 
+directory by doing e.g.:
+
+  $ tar xfz soltrack-0.1.tar.gz
+  $ cd soltrack-0.1/
+
+(replace "0.1" with the correct version number).
+
+
+
+CONFIGURING, COMPILING AND INSTALLING:
+
+To configure, compile and install the code and data files (in the CMake (not Linux! -
+see below) default system directories /usr/local/...), from the main package directory 
+(the one that contains the file CMakeLists.txt), do:
+
+ $ mkdir build && cd build/
+ $ cmake ..
+ $ make
+ $ sudo make install
+
+The second step above configures the code and should find your C compiler.  
+The third step compiles and links the code, and the last step installs it 
+on your system - for which you need root priveliges, hence the 'sudo' command.
+
+
+To install the package in a specific system directory, e.g. the Linux default /usr/...
+(RECOMMENDED), do:
+
+ $ mkdir build && cd build/
+ $ cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr ..
+ $ make
+ $ sudo make install
+
+
+To install the package in your own user directory, you won't need root priveliges,
+can omit the 'sudo' command and combine the last two commands, e.g.:
+
+ $ mkdir build && cd build/
+ $ cmake -DCMAKE_INSTALL_PREFIX:PATH=/home/me/usr ..
+ $ make install
+
+
+To compile the code without installing it anywhere, leave out the install step
+ 
+ $ mkdir build && cd build/
+ $ cmake ..
+ $ make
+
+The compiled libraries and modules can then be found in the usr/ subdirectory of the
+package dir.
+
+
+On a Linux system, the library and module files could be installed as:
+/usr/lib/libSolTrack.*
+/usr/include/SolTrack.h
+
+
+To compile the code with your favourite compiler (in case you have several installed),
+prepend the cmake line with e.g. CC=gcc:
+
+ $ CC=gcc cmake ..
+
+
+If you have multiple cores or processors, you can speed up the make step by specifying
+the number of parallel build jobs using the -j option.  E.g., for four cores, you can
+have four parallel jobs and use:
+
+ $ make -j4
+
+
+CETERA:
+
+If you run into problems or have questions, please feel free to contact the authors
+(preferably by email) through han.vandersluys.nl or soltrack.sf.net
+
