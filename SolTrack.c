@@ -312,10 +312,15 @@ void setNorthToZero(double *azimuth, double *hourAngle, int computeRefrEquatoria
  * 
  * Not touching intermediate results.
  * 
- * @param [inout] azimuth                Azimuth ("wind direction") of the Sun (rad->deg)
- * @param [inout] altitude               Altitude of the Sun above the horizon (rad->deg)
- * @param [inout] hourAngle              Hour angle of the Sun (rad->deg)
+ * @param [inout] longitude              Ecliptical longitude of the Sun (rad->deg)
+ * @param [inout] rightAscension         Right ascension of the Sun (rad->deg)
  * @param [inout] declination            Declination of the Sun (rad->deg)
+ * 
+ * @param [inout] altitude               Altitude of the Sun above the horizon (rad->deg)
+ * @param [inout] azimuthRefract         Azimuth ("wind direction") of the Sun (rad->deg), corrected for refraction
+ * @param [inout] altitudeRefract        Altitude of the Sun above the horizon (rad->deg), corrected for refraction
+ * @param [inout] hourAngle              Hour angle of the Sun (rad->deg)
+ * @param [inout] declinationRefract     Declination of the Sun (rad->deg), corrected for refraction
  * @param [in]    computeRefrEquatorial  Compute refraction correction for equatorial coordinates
  */
 
