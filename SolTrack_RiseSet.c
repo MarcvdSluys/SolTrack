@@ -52,7 +52,7 @@ void SolTrack_RiseSet(struct Time time,  struct Location location, struct Positi
   rsTime.minute = 0;
   rsTime.second = 0.0;
   
-  SolTrack(rsTime, llocation, position, useDegrees, useNorthEqualsZero, computeRefrEquatorial, computeDistance);
+  SolTrack(rsTime, llocation, position, 0, useNorthEqualsZero, computeRefrEquatorial, computeDistance);  // useDegrees = 0: NEVER use degrees internally!
   double agst0 = position->agst;  // AGST for midnight
   
   int evMax = 2;                  // Compute transit, rise and set times by default (0-2)
@@ -79,7 +79,7 @@ void SolTrack_RiseSet(struct Time time,  struct Location location, struct Positi
       th0 = agst0 + 1.002737909350795*tmdy[evi];  // Solar day in sidereal days in 2000
       
       rsTime.second = tmdy[evi]*R2H*3600.0;       // Radians -> seconds - w.r.t. midnight (h=0,m=0)
-      SolTrack(rsTime, llocation, position, useDegrees, useNorthEqualsZero, computeRefrEquatorial, computeDistance);
+      SolTrack(rsTime, llocation, position, 0, useNorthEqualsZero, computeRefrEquatorial, computeDistance);  // useDegrees = 0: NEVER use degrees internally!
       
       ha  = rev2(th0 + llocation.longitude - position->rightAscension);        // Hour angle
       alt = asin(sin(llocation.latitude)*sin(position->declination) + 
@@ -125,21 +125,21 @@ void SolTrack_RiseSet(struct Time time,  struct Location location, struct Positi
   
   // Set north to zero radians for azimuth if desired:
   if(useNorthEqualsZero) {
-    riseSet->riseAzimuth = rev(riseSet->riseAzimuth + PI);  // Add PI and fold between 0 and 2pi
-    riseSet->setAzimuth  = rev(riseSet->setAzimuth + PI);   // Add PI and fold between 0 and 2pi
+    azalt[1] = rev(azalt[1] + PI);  // Add PI and fold between 0 and 2pi
+    azalt[2] = rev(azalt[2] + PI);  // Add PI and fold between 0 and 2pi
   }
   
   // Convert resulting angles to degrees if desired:
   if(useDegrees) {
-    riseSet->transitAltitude  *=  R2D;   // Transit altitude
-    riseSet->riseAzimuth      *=  R2D;   // Rise azimuth
-    riseSet->setAzimuth       *=  R2D;   // Set azimuth
+    azalt[0]  *=  R2D;   // Transit altitude
+    azalt[1]  *=  R2D;   // Rise azimuth
+    azalt[2]  *=  R2D;   // Set azimuth
   }
   
   // Store results:
-  riseSet->transitTime      =  tmdy[0]*R2H;  // Transit time - days -> hours
-  riseSet->riseTime         =  tmdy[1]*R2H;  // Rise time - days -> hours
-  riseSet->setTime          =  tmdy[2]*R2H;  // Set time - days -> hours
+  riseSet->transitTime      =  tmdy[0]*R2H;  // Transit time - radians -> hours
+  riseSet->riseTime         =  tmdy[1]*R2H;  // Rise time - radians -> hours
+  riseSet->setTime          =  tmdy[2]*R2H;  // Set time - radians -> hours
   
   riseSet->transitAltitude  =  azalt[0];     // Transit altitude
   riseSet->riseAzimuth      =  azalt[1];     // Rise azimuth

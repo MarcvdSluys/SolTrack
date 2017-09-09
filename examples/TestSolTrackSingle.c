@@ -25,7 +25,7 @@
 #include "stdlib.h"
 
 int main() {
-  int useDegrees = 0;             // Input (geographic position) and output are in degrees
+  int useDegrees = 1;             // Input (geographic position) and output are in degrees
   int useNorthEqualsZero = 1;     // Azimuth: 0 = South, pi/2 (90deg) = West  ->  0 = North, pi/2 (90deg) = East
   int computeRefrEquatorial = 1;  // Compure refraction-corrected equatorial coordinates (Hour angle, declination): 0-no, 1-yes
   int computeDistance = 1;        // Compute the distance to the Sun in AU: 0-no, 1-yes
@@ -41,10 +41,9 @@ int main() {
   time.minute = 2;
   time.second = 49.217348;
   
-  
   struct Location loc;
-  loc.longitude =  5.950270/R2D;  // HAN University of applied sciences, Arnhem, The Netherlands
-  loc.latitude  = 51.987380/R2D;
+  loc.longitude =  5.950270;  // HAN University of applied sciences, Arnhem, The Netherlands
+  loc.latitude  = 51.987380;
   loc.pressure = 101.0;     // Atmospheric pressure in kPa
   loc.temperature = 283.0;  // Atmospheric temperature in K
   
@@ -63,15 +62,15 @@ int main() {
   printf("Time:   %2d %2d %9.6lf\n", (int)time.hour, (int)time.minute, time.second);
   printf("JD:     %20.11lf\n\n", pos.julianDay);
   
-  printf("Rise time:      %11.5lf,    azimuth:   %11.5lf\n", riseSet.riseTime, riseSet.riseAzimuth*R2D);
-  printf("Transit time:   %11.5lf,    altitude:  %11.5lf\n", riseSet.transitTime, riseSet.transitAltitude*R2D);
-  printf("Set time:       %11.5lf,    azimuth:   %11.5lf\n\n", riseSet.setTime, riseSet.setAzimuth*R2D);
+  printf("Rise time:      %11.5lf,    azimuth:   %11.5lf\n", riseSet.riseTime, riseSet.riseAzimuth);
+  printf("Transit time:   %11.5lf,    altitude:  %11.5lf\n", riseSet.transitTime, riseSet.transitAltitude);
+  printf("Set time:       %11.5lf,    azimuth:   %11.5lf\n\n", riseSet.setTime, riseSet.setAzimuth);
   
-  printf("Ecliptic longitude, latitude:        %10.6lf° %10.6lf°\n", pos.longitude*R2D, 0.0);
-  printf("Right ascension, declination:        %10.6lf° %10.6lf°\n", fmod(pos.rightAscension + MPI, TWO_PI)*R2D/15.0, pos.declination*R2D);
-  printf("Uncorrected altitude:                            %10.6lf°\n\n", pos.altitude*R2D);
-  printf("Corrected azimuth, altitude:         %10.6lf° %10.6lf°\n", pos.azimuthRefract*R2D, pos.altitudeRefract*R2D);
-  printf("Corected hour angle, declination:    %10.6lf° %10.6lf°\n\n", pos.hourAngleRefract*R2D, pos.declinationRefract*R2D);
+  printf("Ecliptic longitude, latitude:        %10.6lf° %10.6lf°\n", pos.longitude, 0.0);
+  printf("Right ascension, declination:        %10.6lf° %10.6lf°\n", pos.rightAscension, pos.declination);
+  printf("Uncorrected altitude:                            %10.6lf°\n\n", pos.altitude);
+  printf("Corrected azimuth, altitude:         %10.6lf° %10.6lf°\n", pos.azimuthRefract, pos.altitudeRefract);
+  printf("Corected hour angle, declination:    %10.6lf° %10.6lf°\n\n", pos.hourAngleRefract, pos.declinationRefract);
   
   
   

@@ -75,13 +75,16 @@ void SolTrack(struct Time time, struct Location location, struct Position *posit
   
   
   // Convert the corrected horizontal coordinates back to equatorial coordinates:
-  if(computeRefrEquatorial) convertHorizontalToEquatorial(llocation.sinLat, llocation.cosLat, position->azimuthRefract, position->altitudeRefract, &position->hourAngleRefract, &position->declinationRefract);
+  if(computeRefrEquatorial) convertHorizontalToEquatorial(llocation.sinLat, llocation.cosLat, position->azimuthRefract, \
+							  position->altitudeRefract, &position->hourAngleRefract, &position->declinationRefract);
   
   // Use the North=0 convention for azimuth and hour angle (default: South = 0) if desired:
   if(useNorthEqualsZero) setNorthToZero(&position->azimuthRefract, &position->hourAngleRefract, computeRefrEquatorial);
   
   // If the user wants degrees, convert final results from radians to degrees:
-  if(useDegrees) convertRadiansToDegrees(&position->azimuthRefract, &position->altitudeRefract,  &position->hourAngleRefract, &position->declinationRefract, computeRefrEquatorial);
+  if(useDegrees) convertRadiansToDegrees(&position->longitude,  &position->rightAscension, &position->declination,  \
+					 &position->altitude, &position->azimuthRefract, &position->altitudeRefract,  \
+					 &position->hourAngleRefract, &position->declinationRefract, computeRefrEquatorial);
 }
 
 
@@ -316,12 +319,18 @@ void setNorthToZero(double *azimuth, double *hourAngle, int computeRefrEquatoria
  * @param [in]    computeRefrEquatorial  Compute refraction correction for equatorial coordinates
  */
 
-void convertRadiansToDegrees(double *azimuth, double *altitude,  double *hourAngle, double *declination, int computeRefrEquatorial) {
-  *azimuth *= R2D;
+void convertRadiansToDegrees(double *longitude,  double *rightAscension, double *declination,  double *altitude, double *azimuthRefract, double *altitudeRefract,  \
+			     double *hourAngle, double *declinationRefract, int computeRefrEquatorial) {
+  *longitude *= R2D;
+  *rightAscension *= R2D;
+  *declination *= R2D;
+  
   *altitude *= R2D;
+  *azimuthRefract *= R2D;
+  *altitudeRefract *= R2D;
   if(computeRefrEquatorial) {
     *hourAngle *= R2D;
-    *declination *= R2D;
+    *declinationRefract *= R2D;
   }
 }
 

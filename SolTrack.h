@@ -73,7 +73,7 @@ struct RiseSet {
 };
 
 
-// Functions:
+// Function prototypes:
 void SolTrack(struct Time time, struct Location location, struct Position *position,  int useDegrees, int useNorthEqualsZero, int computeRefrEquatorial, int computeDistance);
 double computeJulianDay(int year, int month, int day,  int hour, int minute, double second);
 void computeLongitude(int computeDistance, struct Position *position);
@@ -82,7 +82,9 @@ void convertEquatorialToHorizontal(struct Location location, struct Position *po
 void eq2horiz(double sinLat, double cosLat, double longitude,  double rightAscension, double declination,   double agst, double *azimuth, double *sinAlt);
 void convertHorizontalToEquatorial(double sinLat, double cosLat, double azimuth, double altitude, double *hourAngle, double *declination);
 void setNorthToZero(double *azimuth, double *hourAngle, int computeRefrEquatorial);
-void convertRadiansToDegrees(double *azimuth, double *altitude,  double *hourAngle, double *declination, int computeRefrEquatorial);
+void convertRadiansToDegrees(double *longitude,  double *rightAscension, double *declination,  \
+			     double *altitude, double *azimuthRefract, double *altitudeRefract,  \
+			     double *hourAngle, double *declinationRefract, int computeRefrEquatorial);
 double STatan2(double y, double x);
 
 void SolTrack_RiseSet(struct Time time,  struct Location location, struct Position *position, struct RiseSet *riseSet, double sa0, int useDegrees, int useNorthEqualsZero);
