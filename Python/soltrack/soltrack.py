@@ -1,7 +1,7 @@
 
 """SolTrack: a simple, free, fast and accurate C routine to compute the position of the Sun.
     
-  Copyright (c) 2014-2019 Marc van der Sluys, Paul van Kan and Jurgen Reintjes, 
+  Copyright (c) 2014-2020 Marc van der Sluys, Paul van Kan and Jurgen Reintjes, 
   Sustainable Energy research group, HAN University of applied sciences, Arnhem, The Netherlands
    
   This file is part of the SolTrack package, see: http://soltrack.sourceforge.net SolTrack is derived from
@@ -84,8 +84,8 @@ def computeSunPosition(location, time,  useDegrees=False, useNorthEqualsZero=Fal
     # Convert the corrected horizontal coordinates back to equatorial coordinates:
     if(computeRefrEquatorial):
         position.hourAngleRefract,position.declinationRefract = \
-	    convertHorizontalToEquatorial(loc.sinLat, loc.cosLat, position.azimuthRefract,
-	                                  position.altitudeRefract)
+            convertHorizontalToEquatorial(loc.sinLat, loc.cosLat, position.azimuthRefract,
+                                          position.altitudeRefract)
         
     # Use the North=0 convention for azimuth and hour angle (default: South = 0) if desired:
     if(useNorthEqualsZero):
@@ -306,7 +306,7 @@ def convertHorizontalToEquatorial(sinLat, cosLat, azimuth, altitude):
     cosAlt = m.sqrt(1.0 - sinAlt * sinAlt)                             # Cosine of an altitude is always positive or zero
     tanAlt = sinAlt/cosAlt
     
-    hourAngle   = m.atan2( sinAz ,  cosAz  * sinLat + tanAlt * cosLat )      # Local Hour Angle:  0 <= hourAngle < 2pi
+    hourAngle   = m.atan2( sinAz,   cosAz  * sinLat + tanAlt * cosLat )      # Local Hour Angle:  0 <= hourAngle < 2pi
     declination = m.asin(  sinLat * sinAlt  -  cosLat * cosAlt * cosAz  )    # Declination
     
     return hourAngle, declination

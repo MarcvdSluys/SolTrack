@@ -1,7 +1,7 @@
 
 """SolTrack: a simple, free, fast and accurate C routine to compute the position of the Sun.
   
-  Copyright (c) 2014-2019  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
+  Copyright (c) 2014-2020  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
   Sustainable Energy research group, HAN University of applied sciences, Arnhem, The Netherlands
    
   This file is part of the SolTrack package, see: http://soltrack.sourceforge.net
@@ -135,15 +135,15 @@ def computeSunRiseSet(location, time, rsAlt=0.0, useDegrees=False, useNorthEqual
         
         
         if(iter > 30):  # Convergence failed
-            printf("\n  *** WARNING:  riset():  Riset failed to converge: %i %9.3lf  ***\n", evi,rsAlt)
+            print("\n  *** WARNING:  riset():  Riset failed to converge: %i %9.3lf  ***\n" % (evi,rsAlt))
             tmRad[evi] = -m.inf
             azalt[evi] = -m.inf
         else:               # Result converged, store it
             if(evi == 0):
-                azalt[evi] = alt                                                                         # Transit altitude
+                azalt[evi] = alt                                                                      # Transit altitude
             else:
                 azalt[evi] = m.atan2( m.sin(ha), ( m.cos(ha) * m.sin(loc.latitude)  -
-                                               m.tan(pos.declination) * m.cos(loc.latitude) ) )   # Rise,set hour angle -> azimuth
+                                                   m.tan(pos.declination) * m.cos(loc.latitude) ) )   # Rise,set hour angle -> azimuth
         
         
         if(tmRad[evi] < 0.0 and abs(rsAlt) < 1.e-9):

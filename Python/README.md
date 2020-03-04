@@ -75,7 +75,7 @@ print()
 ## Author and licence ##
 
 * Author: Marc van der Sluys
-* Contact: http://han.vandersluys.nl
+* Contact: http://han.vandersluys.nl/en/
 * Licence: [GPLv3+](https://www.gnu.org/licenses/gpl.html)
 
 
