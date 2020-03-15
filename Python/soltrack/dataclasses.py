@@ -22,10 +22,11 @@
 
 # Create dataclasses, used like C structs.
 # 
-# Note, dataclasses new in Python 3.7.  For Python 3.6, (pip) install dataclasses.  -
-#   https://stackoverflow.com/a/45426493/1386750
+# Note, dataclasses new in Python 3.7.  For Python 3.6, (pip) install dataclasses.
+#   - https://stackoverflow.com/a/45426493/1386750
 
 from dataclasses import dataclass
+import pytz as tz
 
 
 @dataclass
@@ -53,6 +54,32 @@ class Time:
     hour:   int   = 12
     minute: int   = 0
     second: float = 0.0
+    
+    
+    def datetime2st(dtObj):
+        """Convert a datetime object to a SolTrack time object.
+        
+           Args:
+               dtObj (datetime):  Date and time in a Python datetime object.
+               
+           Returns:
+               Time:  Date and time in a SolTrack time object.
+        
+        """
+        
+        time = Time()  # Create a SolTrack Time object
+        
+        utc         = dtObj.astimezone(tz.utc)  # Convert from local time to UTC
+        
+        time.year   = utc.year
+        time.month  = utc.month
+        time.day    = utc.day
+        
+        time.hour   = utc.hour
+        time.minute = utc.minute
+        time.second = utc.second
+        
+        return time
 
 
 @dataclass
