@@ -1,9 +1,9 @@
 #!/bin/env python3
 
-version="0.0.1"
+version="0.0.2"
 
 import os
-#os.system('rm -rf *.egg-info/')        # Make 'really clean'
+# os.system('rm -rf *.egg-info/')        # Make 'really clean'
 
 # Prevent the setuptools_scm plugin from adding (only) the contents of the git repo to the tarball:
 os.system('mv -f ../.git ../.git_temp')
@@ -48,7 +48,7 @@ os.system('mv -f ../.git_temp ../.git')
 
 # Do some basic checks:
 print("\nPython source files included in tarball:")
-os.system('tar tfz dist/soltrack-'+version+'.tar.gz |grep -E "\.py"')
+os.system('tar tfz dist/soltrack-'+version+r'.tar.gz |grep -E "\.py"')
 print()
 
 os.system('twine check dist/soltrack-'+version+'.tar.gz')
