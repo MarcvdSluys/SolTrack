@@ -27,6 +27,7 @@
 
 from dataclasses import dataclass
 import pytz as tz
+import datetime as dt
 
 
 @dataclass
@@ -77,9 +78,21 @@ class Time:
         
         time.hour   = utc.hour
         time.minute = utc.minute
-        time.second = utc.second
+        time.second = utc.second + utc.microsecond/1e6
         
         return time
+
+    
+    def now():
+        """Return the current system time as a SolTrack time object.
+        
+           Returns:
+               Current system date and time in a SolTrack time object.
+        """
+        
+        return Time.datetime2st(dt.datetime.now())
+        
+        
 
 
 @dataclass
