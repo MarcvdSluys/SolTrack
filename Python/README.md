@@ -1,12 +1,15 @@
 # SolTrack #
 
 A free, fast and simple Python package to compute the position of the Sun, as well as its rise and set times.
-SolTrack was originally written in C/C++ by Marc van der Sluys of the Sustainable energy research group of the
-HAN University of Applied Sciences in Arnhem, the Netherlands, and has now been translated to pure Python.
+SolTrack was originally written in C/C++ by Marc van der Sluys of the department of astrophysics of the
+Radboud University Nijmegen, the Netherlands and the Sustainable energy research group of the HAN University
+of Applied Sciences in Arnhem, the Netherlands, and Paul van Kan of the Sustainable energy research group of
+the HAN University of Applied Sciences in Arnhem, the Netherlands.  The code has now been translated to pure
+Python.
 
 SolTrack performs about 12340 position calculations per second on a single 3.6 GHz core of my 2013 laptop,
 with an accuracy of 0.0030 ± 0.0016°.  This makes it about 500x times faster than astropy, but around 50x
-slower than pyEphem, which is written in C.  SolTrack has been used to control solar trackers, as well as
+slower than pyEphem, which is written in C.  SolTrack has been used to control solar trackers, as well as for
 modelling in solar energy.
 
 
@@ -81,7 +84,7 @@ print()
 
 ## References ##
 
+* [Celestial mechanics in a nutshell (CMiaNS)](https://cmians.sourceforge.io/)
 * Meeus, [Astronomical algorithms](https://www.willbell.com/math/MC1.HTM), 2nd Ed.
 * This C and Python codes are adapted from the Fortran implementation in
   [libTheSky](http://libthesky.sourceforge.net/), which contains many references.
-* [Celestial mechanics in a nutshell (CMiaNS)](https://cmians.sourceforge.io/)
