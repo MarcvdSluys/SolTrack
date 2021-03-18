@@ -61,6 +61,9 @@ int main() {
   printf("Date:   %4d %2d %2d\n", time.year, time.month, time.day);
   printf("Time:   %2d %2d %9.6lf\n", (int)time.hour, (int)time.minute, time.second);
   printf("JD:     %20.11lf\n\n", pos.julianDay);
+  printf("tJD:    %20.11lf\n", pos.tJD);
+  printf("GMST:   %20.11lf\n", fmod(pos.agst - pos.nutationLon * pos.cosObliquity, 6.28318530717958647693)/3.14159265358979323846*12.0);
+  printf("AGST:   %20.11lf\n", fmod(pos.agst, 6.28318530717958647693)/3.14159265358979323846*12.0);
   
   printf("Rise time:      %11.5lf,    azimuth:   %11.5lf\n", riseSet.riseTime, riseSet.riseAzimuth);
   printf("Transit time:   %11.5lf,    altitude:  %11.5lf\n", riseSet.transitTime, riseSet.transitAltitude);

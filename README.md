@@ -1,117 +1,108 @@
 # SolTrack #
 
-<b>SolTrack</b> is a free, fast and accurate C/C++ routine to compute the position of the Sun.  In addition, SolTrack computes
+**SolTrack** is a free, fast and accurate C/C++ routine to compute the position of the Sun.  In addition, SolTrack computes
 rise and set times and azimuths, and transit times and altitudes.
-The code can be used to track the Sun on a low-specs machine, such as a microcontroller or PLC, and can be used for <i>e.g.</i>
+The code can be used to track the Sun on a low-specs machine, such as a microcontroller or PLC, and can be used for _e.g._
 (highly) concentrated (photovoltaic) solar power or accurate solar-energy modelling.  
-SolTrack has been developed by <a href="http://han.vandersluys.nl/en/">Marc van der Sluys</a>,
-Paul van Kan and Jurgen Reintjes, at the 
-<a href="http://www.han.nl/international/english/research/sustainable-electrical-energy/">Lectorate of Sustainable Energy</a>
-at the <a href="http://www.han.nl/international/english/">HAN University of Applied Sciences</a>
-in Arnhem, the Netherlands.
-The code is based on the astronomical Fortran library 
-<a href="http://libthesky.sf.net" title="libTheSky: a Fortran library to compute the positions of celestial bodies and events with great accuracy">libTheSky</a>
-and can be used, modified and distributed under the conditions of version 3 of the 
-<a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser General Public Licence</a>.
+
+
+SolTrack has been developed by [Marc van der Sluys](http://han.vandersluys.nl/en/), Paul van Kan and Jurgen
+Reintjes, at the [Sustainable Energy research
+group](http://www.han.nl/international/english/research/sustainable-electrical-energy/) at the [HAN University
+of Applied Sciences](http://www.han.nl/international/english/) in Arnhem, the Netherlands.  The code is based
+on the astronomical Fortran library [libTheSky](http://libthesky.sf.net "libTheSky: a Fortran library to
+compute the positions of celestial bodies and events with great accuracy") and can be used, modified and
+distributed under the conditions of version 3 of the [GNU Lesser General Public
+Licence](http://www.gnu.org/licenses/lgpl.html).
 
 
 
 
-<br>
-<h2>Description, speed and accuracy</h2>
+## Description, speed and accuracy ##
 
-See also the <a href="http://han.vandersluys.nl/en/Publications.html"><b>poster and conference proceedings</b></a> we presented on CPV-11 in April 2015.
+See also the [**poster and conference proceedings**](http://han.vandersluys.nl/en/Publications.html) we
+presented on CPV-11 in April 2015.
 
-SolTrack is a simple C/C++ routine that can compute the position of the Sun in topocentric 
-coordinates, both in a <a href="https://en.wikipedia.org/wiki/Horizontal_coordinate_system" title="Wikipedia">horizontal</a> 
-and in an <a href="https://en.wikipedia.org/wiki/Equatorial_coordinate_system" title="Wikipedia">equatorial</a>
-system. The code is based on the Fortran library <a href="http://libthesky.sf.net">libTheSky</a>
-and includes corrections for <a href="http://en.wikipedia.org/wiki/Aberration_of_light" title="Wikipedia">aberration</a>
-and <a href="http://en.wikipedia.org/wiki/Parallax#Diurnal_parallax" title="Wikipedia">parallax</a>, and a 
-<a href="http://adsabs.harvard.edu/abs/1986S%26T....72...70S">simple routine</a>
-to correct for <a href="https://en.wikipedia.org/wiki/Atmospheric_refraction" title="Wikipedia">atmospheric refraction</a>,
-taking into account local atmospheric conditions.
-We compared the performance of SolTrack to detailed calculations using the planetary theories
-<a href="http://cdsads.u-strasbg.fr/cgi-bin/nph-bib_query?1988A%26A...202..309B">VSOP 87</a>
-and an <a href="http://astro.ukho.gov.uk/data/tn/naotn63.pdf">accurate model</a> for atmospheric refraction.
-
-
-We tested SolTrack for 100,000 random moments in the next 100 years (between 2017 and
-2116) when the Sun is above the horizon in the Netherlands (latitude &sim;52&deg;N). We find that
-the mean error in position is 0.0030 &pm; 0.0016&deg;, which is sufficient for
-solar tracking of CPV systems under all conditions. The code can compute ten million
-positions in 6.47 &pm; 0.03s on a single 2.67 GHz CPU core when only
-horizontal coordinates (azimuth and altitude) are computed, and takes 8.16
-&pm; 0.02s (26% slower) if refraction-corrected parallactic coordinates are also
-calculated.  In addition to positions, SolTrack can also compute the distance to the Sun,
-its rise, transit and set times, and its rise and set azimuth and transit altitude.
+SolTrack is a simple C/C++ routine that can compute the position of the Sun in topocentric coordinates, both
+in a [horizontal](https://en.wikipedia.org/wiki/Horizontal_coordinate_system "Wikipedia") and in an
+[equatorial](https://en.wikipedia.org/wiki/Equatorial_coordinate_system "Wikipedia") system. The code is based
+on the Fortran library [libTheSky](http://libthesky.sf.net) and includes corrections for
+[aberration](http://en.wikipedia.org/wiki/Aberration_of_light "Wikipedia") and
+[parallax](http://en.wikipedia.org/wiki/Parallax#Diurnal_parallax "Wikipedia"), and a [simple
+routine](http://adsabs.harvard.edu/abs/1986S%26T....72...70S) to correct for [atmospheric
+refraction](https://en.wikipedia.org/wiki/Atmospheric_refraction "Wikipedia"), taking into account local
+atmospheric conditions.  We compared the performance of SolTrack to detailed calculations using the planetary
+theories [VSOP 87](http://cdsads.u-strasbg.fr/cgi-bin/nph-bib_query?1988A%26A...202..309B) and an [accurate
+model](http://astro.ukho.gov.uk/data/tn/naotn63.pdf) for atmospheric refraction.
 
 
-When compared to the <a href="http://www.psa.es/sdg/sunpos.htm">PSA SunPos</a> routine,
-which is also light-weight and freely available, SolTrack is 24 times more accurate (0.073&deg;) and 
-2% faster. When computing additional refraction-corrected equatorial coordinates, SolTrack is 
-23% slower than SunPos. We also compared the performance of SolTrack to the 
-<a href="http://www.nrel.gov/midc/spa/">NREL SPA routine</a>, which is more elaborate and 
-has a more restricted licence. SPA is 24% more accurate than SolTrack (0.0023&deg;), 
-but also 20 times slower, where we computed only the Sun's position in SPA (not its rise and set times or 
-incident radiation) and included the additional refraction-corrected equatorial coordinates in SolTrack.
-A paper describing more details is forthcoming.
+We tested SolTrack for 100,000 random moments in the next 100 years (between 2017 and 2116) when the Sun is
+above the horizon in the Netherlands (latitude &sim;52&deg;N). We find that the mean error in position is
+0.0030 &pm; 0.0016&deg;, which is sufficient for solar tracking of CPV systems under all conditions. The code
+can compute ten million positions in 6.47 &pm; 0.03s on a single 2.67 GHz CPU core when only horizontal
+coordinates (azimuth and altitude) are computed, and takes 8.16 &pm; 0.02s (26% slower) if
+refraction-corrected parallactic coordinates are also calculated.  In addition to positions, SolTrack can also
+compute the distance to the Sun, its rise, transit and set times, and its rise and set azimuth and transit
+altitude.
 
 
-<br>
-<h2>SolTrack pages</h2>
-<ul>
-  <li>
-<a href="https://sourceforge.net/projects/soltrack/"><b>SolTrack project page</b></a> &nbsp; on SourceForge 
-(code/binary download, bug reports, etc.)
-  </li>
-  <ul style="line-height:1.5em; margin-top:0.3em;">
-<li><i>2017-04-15: <b>v2.1</b> released</i></li>
-<li><i>2017-02-22: <b>v2.0</b> released</i></li>
-<li><i>2015-04-11: <b>v1.1</b> released</i></li>
-<li><i>2014-11-10: <b>v1.0</b> released (first stable release)</i></li>
-  </ul>
+When compared to the [PSA SunPos](http://www.psa.es/sdg/sunpos.htm) routine, which is also light-weight and
+freely available, SolTrack is 24 times more accurate (0.073&deg;) and 2% faster. When computing additional
+refraction-corrected equatorial coordinates, SolTrack is 23% slower than SunPos. We also compared the
+performance of SolTrack to the [NREL SPA routine](http://www.nrel.gov/midc/spa/), which is more elaborate and
+has a more restricted licence. SPA is 24% more accurate than SolTrack (0.0023&deg;), but also 20 times slower,
+where we computed only the Sun's position in SPA (not its rise and set times or incident radiation) and
+included the additional refraction-corrected equatorial coordinates in SolTrack.  A paper describing more
+details is forthcoming.
 
-  <li>
-<a href="http://soltrack.sourceforge.net/doxygen/"><b>Code documentation</b></a> &nbsp; generated by <a href="http://www.doxygen.org/">Doxygen</a>
-  </li>
-</ul>
+
+## SolTrack pages ##
+* [**SolTrack homepage**](http://soltrack.sourceforge.net/) describing the C/C++ and Python versions
+* [**SolTrack project page**](https://sourceforge.net/projects/soltrack/) &nbsp; on SourceForge (code/binary
+  download, bug reports, etc.)
+    + _2017-04-15: **v2.1** released_
+    + _2017-02-22: **v2.0** released_
+    + _2015-04-11: **v1.1** released_
+    + _2014-11-10: **v1.0** released (first stable release)_
+* [**SolTrack for Python**](https://pypi.org/project/soltrack/) on PyPI
+* [**SolTrack for Arduino**](https://github.com/MarcvdSluys/SolTrack-Arduino/) on GitHub
+* [**Code documentation**](http://soltrack.sourceforge.net/doxygen/) &nbsp; generated by
+  [Doxygen](http://www.doxygen.org/)
 
 
 
-<br>
-<h2>Installing SolTrack</h2>
-The SolTrack tarball contains CMake installer files for (semi)automatic compilation and installation of
-the shared (and if desired static) library.  See doc/INSTALL for more information.
+
+## Installing SolTrack ##
+
+The SolTrack tarball contains CMake installer files for (semi)automatic compilation and installation of the
+shared (and if desired static) library.  See doc/INSTALL for more information.
 
 
-SolTrack has an <a href="https://cgit.gentoo.org/user/AstroFloyd.git/tree/sci-astronomy/soltrack">ebuild</a> for easy 
-installation in Gentoo Linux and has been included in Arch Linux's <a href="https://aur.archlinux.org/packages/soltrack/">AUR</a>.
-Binary packages (<a href="https://sourceforge.net/projects/soltrack/files/deb/">.deb</a> and
-<a href="https://sourceforge.net/projects/soltrack/files/rpm/">.rpm</a>) are available for <i>e.g.</i> Debian, (*)Ubuntu,
-Red Hat, Fedora, CentOS, Scientific Linux, SUSE and many others.
-
-
-
-<br>
-<h2>Examples</h2>
-The examples/ directory lists two example programs that can be linked against the SolTrack library, and which compute
-either data for a single instance, or read dates from a file and compute the corresponding positions.  Example output
-is provided to verify the results.
+SolTrack has an [ebuild](https://cgit.gentoo.org/user/AstroFloyd.git/tree/sci-astronomy/soltrack) for easy
+installation in Gentoo Linux and has been included in Arch Linux's
+[AUR](https://aur.archlinux.org/packages/soltrack/).  Binary packages
+([.deb](https://sourceforge.net/projects/soltrack/files/deb/) and
+[.rpm](https://sourceforge.net/projects/soltrack/files/rpm/)) are available for _e.g._ Debian, (*)Ubuntu, Red
+Hat, Fedora, CentOS, Scientific Linux, SUSE and many others.
 
 
 
-<br>
-<h2>SolTrack has been used by:</h2>
-<ul>
-  <li><a href="https://www.han.nl/international/english/research/sustainable-electrical-energy/">HAN University of Applied Sciences</a>, The Netherlands</li>
-  <li><a href="http://www.suncycle.nl/">SunCycle</a></li>
-</ul>
+## Examples ##
+
+The examples/ directory lists two example programs that can be linked against the SolTrack library, and which
+computes either data for a single instance, or read dates from a file and compute the corresponding positions.
+Example output is provided to verify the results.
 
 
-<br>
-<h2>Contact</h2>
-You can contact the authors (preferably through email) via <a href="http://han.vandersluys.nl/en/">this page</a>.
 
-<br>
+## SolTrack has been used by: ##
+* [HAN University of Applied Sciences](https://www.han.nl/international/english/research/sustainable-electrical-energy/), The Netherlands
+* [SunCycle](http://www.suncycle.nl/)
+
+
+
+## Contact ##
+
+You can contact the authors (preferably through email) via [this page](http://han.vandersluys.nl/en/).
+
 

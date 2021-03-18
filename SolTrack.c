@@ -1,7 +1,7 @@
 /*
   SolTrack: a simple, free, fast and accurate C routine to compute the position of the Sun
   
-  Copyright (c) 2014-2019  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
+  Copyright (c) 2014-2021  Marc van der Sluys, Paul van Kan and Jurgen Reintjes,
   Sustainable Energy research group, HAN University of applied sciences, Arnhem, The Netherlands
    
   This file is part of the SolTrack package, see: http://soltrack.sourceforge.net
@@ -20,7 +20,7 @@
 */
 
 
-#include "SolTrack.h"
+#include <SolTrack.h>
 
 
 /**
@@ -36,7 +36,7 @@
  * @param [in]    computeDistance        Compute distance to the Sun (in AU): 0-no, 1-yes
  *
  * Example Usage:
- * @code SolTrack(time, location, &position, 1); @endcode
+ * @code SolTrack(time, location, &position, 1,1,0,0); @endcode
  */
 
 void SolTrack(struct Time time, struct Location location, struct Position *position,  int useDegrees, int useNorthEqualsZero, int computeRefrEquatorial, int computeDistance) {
