@@ -27,7 +27,9 @@
         "https://pypi.org/project/soltrack/"
     ],
     "codeRepository": [
-        "https://soltrack.sourceforge.net/"
+        "https://soltrack.sourceforge.net/",
+        "https://github.com/MarcvdSluys/SolTrack",
+        "https://github.com/MarcvdSluys/SolTrack-Arduino"
     ],
     "referencePublication": [
         {
