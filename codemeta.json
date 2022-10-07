@@ -1,0 +1,40 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "name": "SolTrack: Compute the position of the Sun in topocentric coordinates",
+    "description": "SolTrack computes the position of the Sun, the rise and set times and azimuths, and transit times and altitudes. It includes corrections for aberration and parallax, and has a simple routine to correct for atmospheric refraction, taking into account local atmospheric conditions. SolTrack is derived from the Fortran library libTheSky (ascl:2209.018) and has versions in C(++), Arduino Scratch and Python. The package can be used to track the Sun on a low-specs machine, such as a microcontroller or PLC, and can be used for (highly) concentrated (photovoltaic) solar power or accurate solar-energy modeling.",
+    "identifier": "ascl:2209.019",
+    "author": [
+        {
+            "@type": "Person",
+            "givenName": "Marc",
+            "familyName": "van der Sluys",
+            "@id": "https://orcid.org/0000-0003-1231-0762"
+        },
+        {
+            "@type": "Person",
+            "givenName": "Paul",
+            "familyName": "van Kan",
+        },
+        {
+            "@type": "Person",
+            "givenName": "Jurgen",
+            "familyName": "Reintjes",
+        }
+    ],
+    "citation": "https://ui.adsabs.harvard.edu/abs/2022ascl.soft09019V",
+    "relatedLink": [
+        "https://pypi.org/project/soltrack/"
+    ],
+    "codeRepository": [
+        "https://soltrack.sourceforge.net/"
+    ],
+    "referencePublication": [
+        {
+            "@type": "ScholarlyArticle",
+            "url": "https://ui.adsabs.harvard.edu/abs/2022arXiv220901557V",
+        }
+    ],
+    "version": "2.2",
+    "license": "https://spdx.org/licenses/EUPL-1.2.html"
+}
