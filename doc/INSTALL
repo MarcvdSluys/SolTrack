@@ -90,8 +90,31 @@ have four parallel jobs and use:
  $ make -j4
 
 
+COMPILING, LINKING AND RUNNING THE EXAMPLE CODE:
+
+You can (edit and) use the Makefile in the examples/ directory to compile and link the
+examples.  As is, the Makefile assumes you installed the SolTrack libraries in a default
+path on your system (e.g. /usr/lib/),
+
+cd examples/
+make  # Creates binary executables TestSolTrackSingle and TestSolTrackFile
+./TestSolTrackSingle  # run first example, output to screen
+./TestSolTrackFile    # run second example, output to file SolTrack_positions.dat
+
+
+If you did not install SolTrack in a system directory, you can use the library files from
+the ../usr/lib/ directory you just created to link (using options from Makefile):
+gcc -o TestSolTrackSingle TestSolTrackSingle.c -L../usr/lib -lSolTrack -lm
+
+
+For static compilation and linking:
+gcc -c TestSolTrackSingle.c  # Compile only - creates .o file
+gcc -o TestSolTrackSingleStatic -static TestSolTrackSingle.o ../usr/lib/libSolTrack.a /usr/lib64/libm.a  # Link
+
+
 CETERA:
 
 If you run into problems or have questions, please feel free to contact the authors
 (preferably by email) through han.vandersluys.nl or soltrack.sf.net
+
 
